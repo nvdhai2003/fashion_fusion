@@ -1,6 +1,7 @@
 package nvdhai12.androiddev.fashionfusion.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
@@ -11,11 +12,20 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
+
+import nvdhai12.androiddev.fashionfusion.MainActivity;
 import nvdhai12.androiddev.fashionfusion.R;
+import nvdhai12.androiddev.fashionfusion.database.SessionManager;
 
 public class LoginActivity extends AppCompatActivity {
-    private TextView tvCreateAccount;
+    private TextView tvCreateAccount, tvForgot;
+    private TextInputEditText edtEmail, edtPassword;
+    private AppCompatButton btnLogin;
+    private SessionManager session;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +45,28 @@ public class LoginActivity extends AppCompatActivity {
             decorView.setSystemUiVisibility(flags);
         }
 
+        session = new SessionManager(getApplicationContext());
+
         tvCreateAccount = findViewById(R.id.tv_createaccount);
+        tvForgot = findViewById(R.id.tv_forgot);
+        edtEmail = findViewById(R.id.edt_email);
+        edtPassword = findViewById(R.id.edt_password);
+        btnLogin = findViewById(R.id.btn_login);
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = edtEmail.getText().toString().trim();
+                String password = edtPassword.getText().toString().trim();
+                if (email.equals("nvdhai2003@gmail.com") & password.equals("Hainguyen120203@")) {
+                    Toast.makeText(LoginActivity.this, "Login Successfully!", Toast.LENGTH_SHORT).show();
+                    session.setLoggedIn(true);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
 
         tvCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override

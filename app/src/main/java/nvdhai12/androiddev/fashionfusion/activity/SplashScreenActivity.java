@@ -11,10 +11,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import nvdhai12.androiddev.fashionfusion.MainActivity;
 import nvdhai12.androiddev.fashionfusion.R;
+import nvdhai12.androiddev.fashionfusion.database.SessionManager;
 
 public class SplashScreenActivity extends AppCompatActivity {
-
+    private static final int SPLASH_TIME_OUT = 3000;
+    private SessionManager session;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,15 +36,28 @@ public class SplashScreenActivity extends AppCompatActivity {
             decorView.setSystemUiVisibility(flags);
         }
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        }, 3000);
+        session = new SessionManager(getApplicationContext());
 
-
+        if (session.isLoggedIn()) {
+            // Nếu đã đăng nhập, chờ một khoảng thời gian rồi chuyển sang màn hình chính
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }, SPLASH_TIME_OUT);
+        } else {
+            // Nếu chưa đăng nhập, chờ một khoảng thời gian rồi chuyển sang màn hình đăng nhập
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }, SPLASH_TIME_OUT);
+        }
     }
 }
