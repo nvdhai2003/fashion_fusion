@@ -38,4 +38,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'me.relex:circleindicator:2.1.6'
+    implementation 'com.github.iwgang:countdownview:2.1.2'
 }
