@@ -5,12 +5,18 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,15 +62,46 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = edtEmail.getText().toString().trim();
-                String password = edtPassword.getText().toString().trim();
-                if (email.equals("nvdhai2003@gmail.com") & password.equals("Hainguyen120203@")) {
-                    Toast.makeText(LoginActivity.this, "Login Successfully!", Toast.LENGTH_SHORT).show();
-                    session.setLoggedIn(true);
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                performLogin();
+            }
+        });
+
+        edtEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                // Nếu trường tên đăng nhập không còn focus (người dùng nhập xong và chuyển sang trường khác)
+                if (!hasFocus) {
+                    // Di chuyển trỏ nhập vào trường mật khẩu
+                    edtPassword.requestFocus();
                 }
+            }
+        });
+
+        edtPassword.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // Ẩn bàn phím ảo nếu bạn muốn
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(edtPassword.getWindowToken(), 0);
+                    performLogin();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        findViewById(R.id.constraintlayout2).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Ẩn bàn phím ảo nếu đang hiển thị
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+
+                // Hủy bỏ focus của trường đang có focus (nếu có)
+                clearFocus();
+
+                return false;
             }
         });
 
@@ -74,5 +111,27 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
+    }
+
+    private void performLogin() {
+        String email = edtEmail.getText().toString().trim();
+        String password = edtPassword.getText().toString().trim();
+        if (email.equals("nvdhai2003@gmail.com") & password.equals("Hainguyen120203@")) {
+            Toast.makeText(LoginActivity.this, "Login Successfully!", Toast.LENGTH_SHORT).show();
+            session.setLoggedIn(true);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishAffinity();
+    }
+
+    private void clearFocus() {
+        edtEmail.clearFocus();
+        edtPassword.clearFocus();
     }
 }
